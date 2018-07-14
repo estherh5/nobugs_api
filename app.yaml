@@ -1,0 +1,14 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /.*
+  script: server.app
+
+instance_class: F2
+
+env_variables:
+    ENV_TYPE: <Dev or Prod>
+    SPREADSHEET: <Google Sheets spreadsheet ID>
+    RANGE: <Google Sheets spreadsheet range where email addresses are stored>

@@ -1,0 +1,4 @@
+[run]
+omit =
+    # omit files in python3.6 folder
+    ~/.virtualenvs/nobugs/lib/python3.6/*
