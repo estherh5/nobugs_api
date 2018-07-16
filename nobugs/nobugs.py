@@ -45,6 +45,17 @@ def create_email():
     # The A1 notation of a range to search for data in the spreadsheet
     range_ = os.environ['RANGE']
 
+    values_request = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range=range_
+        )
+    values_response = values_request.execute()
+
+    values = values_response['values']
+
+    if [email] in values:
+        return make_response('Email address already on mailing list', 409)
+
     # How the input data should be interpreted (as though a user entered it)
     value_input_option = 'USER_ENTERED'
 
@@ -58,7 +69,7 @@ def create_email():
         ]
     }
 
-    gs_request = service.spreadsheets().values().append(
+    append_request = service.spreadsheets().values().append(
         spreadsheetId=spreadsheet_id,
         range=range_,
         valueInputOption=value_input_option,
@@ -66,6 +77,6 @@ def create_email():
         body=value_range_body
         )
 
-    response = gs_request.execute()
+    append_response = append_request.execute()
 
     return make_response(email, 201)

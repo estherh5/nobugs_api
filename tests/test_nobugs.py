@@ -78,3 +78,24 @@ class TestEmail(unittest.TestCase):
         # Assert
         self.assertEqual(post_response.status_code, 400)
         self.assertEqual(error, 'Invalid email address')
+
+    @patch('google.auth.app_engine.Credentials')
+    @patch('googleapiclient.http.HttpRequest.execute',
+        return_value={'values': [['test@test.com']]})
+    def test_email_post_email_exists(self, Credentials, request):
+        # Arrange
+        data = {
+            'email': 'test@test.com'
+        }
+
+        # Act
+        post_response = self.client.post(
+            '/api/email',
+            data=json.dumps(data),
+            content_type='application/json'
+            )
+        error = post_response.get_data(as_text=True)
+
+        # Assert
+        self.assertEqual(post_response.status_code, 409)
+        self.assertEqual(error, 'Email address already on mailing list')
