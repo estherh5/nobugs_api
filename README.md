@@ -6,23 +6,22 @@ NoBugs! is a pest control supply company in Philadelphia, PA. My father founded 
 
 ## Setup
 1. Create a project on Google Cloud Platform's App Engine.
-2. Clone this repository on your Cloud instance.
-3. Enter a virtual environment on your Cloud instance (`virtualenv env`) and install dependencies into a lib folder that will be used during deployment (`pip install -t lib -r requirements.txt`).
-4. Create a Google Sheets spreadsheet to store email addresses.
-5. Enable the [Google Sheets API](https://console.developers.google.com/apis/api/sheets) and the [Google Drive API](https://console.developers.google.com/apis/api/drive) for your Cloud project.
-6. Create a [service account key](https://console.cloud.google.com/apis/credentials) for your App Engine default service account.
-7. Set the following environment variables for the API in the app.yaml file:
+2. Create a Google Sheets spreadsheet to store email addresses and share it (Editor) with the App Engine default service account (`<project>@appspot.gserviceaccount.com`). The API authenticates as that account, so no key file is needed.
+3. Enable the [Google Sheets API](https://console.developers.google.com/apis/api/sheets) for your Cloud project.
+4. Copy `app.yaml` to `app.prod.yaml` (gitignored) and fill in:
     * `ENV_TYPE` for the environment status (set this to "Dev" for testing or "Prod" for live)
     * `SPREADSHEET` for the Google Sheets spreadsheet ID (found in the spreadsheet URL; i.e., "https://docs.google.com/spreadsheets/d/<ID\>")
     * `RANGE` for the Google Sheets spreadsheet range where email addresses are stored (e.g., "A:A")
-8. Start your server by running `gcloud app deploy` on the Cloud CLI.
+5. Deploy with `gcloud app deploy app.prod.yaml --version <name> --no-promote`, check it at `https://<name>-dot-<project>.<region>.r.appspot.com/api/email`, then move traffic with `gcloud app services set-traffic default --splits <name>=1`.
+
+Tests: `pip install -r requirements.txt && ENV_TYPE=Dev SPREADSHEET=x RANGE=A:A python -m unittest discover`.
 
 ## API
 To post an email address to the NoBugs Google Sheets spreadsheet, a client can send a request to the following endpoint:
 
 \
 **POST** /api/email
-* Post email address by sending the jsonified email address in the request body. Note that email addresses that are already included on the spreadsheet will not get added again.
+* Post email address by sending the jsonified email address in the request body. Note that email addresses that are already included on the spreadsheet will not get added again (409), addresses are stored as plain text (never evaluated as formulas), each IP may sign up 5 times an hour (429), and browsers may call it only from https://nobugsphilly.com.
 * Example request body:
 ```javascript
 {

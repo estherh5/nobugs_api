@@ -1,0 +1,10 @@
+.git/
+.gitignore
+tests/
+.travis.yml
+.coveragerc
+README.md
+ROADMAP.md
+LICENSE
+__pycache__/
+*.pyc
