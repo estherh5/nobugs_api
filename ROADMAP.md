@@ -7,7 +7,7 @@ Committed doc, not scratch. Kept current by hand as work ships.
 
 ## Next
 
-- [from 2026-10-13] **Delete the retired python27 versions and the disabled 2018 key.** Production moved to version `py313` on 2026-09-29; the ten `2018071*` versions stay as a rollback for two weeks, and service-account key `d41e0f20…` (bundled as `credentials.json` in the 2018 deploys, never expiring) was disabled, not deleted. If nothing broke, `gcloud app versions delete` the old versions and `gcloud iam service-accounts keys delete` the key.
+- [from 2026-10-13] **Delete the disabled 2018 service-account key.** Key `d41e0f20…` (bundled as `credentials.json` in the 2018 deploys, never expiring) was disabled, not deleted, when production moved to `py313` on 2026-09-29. If nothing has broken by then, `gcloud iam service-accounts keys delete` it. The retired versions are already gone: all 68 `2018*` versions (not ten; 62 were still SERVING at 0% traffic, returning 500 on pre-fix code) were deleted 2026-09-30 at Esther's go-ahead, leaving `py313` alone at 100%. That removed the planned rollback, so a `py313` regression is fixed forward.
 
 ## Shipped
 
